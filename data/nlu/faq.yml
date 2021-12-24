@@ -1,0 +1,10 @@
+version: "2.0"
+nlu:
+- intent: faq/1047
+  examples: |
+    - Can I sign up for Medicare plans online?
+    - Can I join Medicare Online?
+- intent: faq/1048
+  examples: |
+    - Medicare Enrollment Period?
+    - What are Medicare Enrollment Period?

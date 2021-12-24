@@ -1,0 +1,75 @@
+version: "2.0"
+stories:
+
+- story: greet-contactform-handoff
+  steps:
+  - intent: greet
+  - action: action_verify_new_user
+  - slot_was_set:
+    - is_new_user: new_user
+  - action: utter_greet
+  - action: contact_form
+  - active_loop: contact_form
+
+- story: greet-contactform-handoff-twilio-sms
+  steps:
+  - intent: greet
+  - action: action_verify_new_user
+  - slot_was_set:
+    - is_new_user: new_user
+  - action: action_set_channel
+  - slot_was_set:
+    - channel: twilio
+  - action: utter_greet
+  - intent: affirm
+  - action: contact_form
+  - active_loop: contact_form
+
+- story: greet-find-intent-twilio-sms
+  steps:
+  - intent: greet
+  - action: action_verify_new_user
+  - slot_was_set:
+    - is_new_user: new_user
+  - action: action_set_channel
+  - slot_was_set:
+    - channel: twilio
+  - action: utter_greet
+  - intent: deny
+  - action: utter_no_contact_agent_hand_off
+
+
+- story: greet-contactform-handoff_existing_user_existing_session
+  steps:
+  - intent: greet
+  - action: action_verify_new_user
+  - slot_was_set:
+    - is_new_user: existing_user
+  - slot_was_set:
+    - is_new_session: no
+  - action: utter_greet_existing_user
+  - action: utter_agent_hand_off
+
+- story: greet-contactform-handoff_existing_user_new_session
+  steps:
+  - intent: greet
+  - action: action_verify_new_user
+  - slot_was_set:
+    - is_new_user: existing_user
+  - slot_was_set:
+    - is_new_session: yes
+  - action: contact_form
+  - active_loop: contact_form
+
+- story: enrollment
+  steps:
+  - intent: enroll
+  - action: contact_form
+  - active_loop: contact_form
+  
+- story: out of scope
+  steps:
+  - intent: out_of_scope
+    user: |-
+      I want to order a pizza
+  - action: utter_out_of_scope
