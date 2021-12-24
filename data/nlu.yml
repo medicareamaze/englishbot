@@ -67,9 +67,10 @@ nlu:
     - my email is [callsanjeevat@yahoo.com](email)
     - My cell Phone number is [2018881440](phone-number)
     - My birtdate is May 10th 1972
-    - [05/10/1972](phone-number)
     - san@sam.com
     - It is [2012181444](phone-number)
+    - My date of birth is 05/10/1972
+    - it is 05/10/1972
 - intent: inform
   examples: |
     - [2012181444](phone-number)
@@ -94,6 +95,7 @@ nlu:
     - Hi
     - hola
     - Hello
+    - Hi There
 - intent: goodbye
   examples: |
     - good afternoon
@@ -119,7 +121,6 @@ nlu:
     - ok
     - yep
     - yup
-    
 - intent: deny
   examples: |
     - no
@@ -145,3 +146,12 @@ nlu:
 - intent: nlu_fallback
   examples: |
     - [Sanjeev Rangaiah](PERSON)
+- intent: faq
+  examples: |
+    - What are the Medicare Enrollment Period?
+    - what are the different medicare enrollment periods
+    - what are the different Medicare Enrollment periods
+    - Am I In a medicare Enrollment period?
+    - Am I In a medicare Enrollment Period?
+    - Am I in a Enrollment period?
+    - What are MedicareEnrollment Periods?
