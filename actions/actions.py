@@ -33,7 +33,9 @@ from dateutil import parser
 import sqlalchemy as sa
 from datetime import datetime
 from rasa_sdk.types import DomainDict
-
+import requests
+import os
+from dotenv import load_dotenv
 
 from rasa_sdk.interfaces import Action
 from rasa_sdk.events import (
@@ -433,4 +435,33 @@ class ActionSetChannel(Action):
         print(channel)
         return [SlotSet("channel", channel)]
  
-    
+class ActionSetFaqSlot(Action):
+    """Returns the chitchat utterance dependent on the intent"""
+
+    def name(self) -> Text:
+        return "action_set_faq_slot"
+
+    def run(
+        self,
+        dispatcher: CollectingDispatcher,
+        tracker: Tracker,
+        domain: DomainDict,
+    ) -> List[EventType]:
+        text = tracker.latest_message['text']
+        print(text)
+        load_dotenv()
+        url = os.getenv('luis_url')
+        auth_key = os.getenv('luis_auth_key')
+        print(url)
+        #print(auth_key)
+        payload="{'question':'"+text+"'}"
+        headers = {
+        'Authorization': 'EndpointKey '+os.getenv('luis_auth_key'),
+        'Content-type': 'application/json'
+         }
+
+        response = requests.request("POST", url, headers=headers, data=payload).json()
+        #print(response['answers'][0]['answer'])
+        response_text= str(response['answers'][0]['answer']).replace('eHealth','MedicareDialog')
+        dispatcher.utter_message(response_text)
+        return [SlotSet("faq", "yes")]

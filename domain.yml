@@ -1,6 +1,6 @@
 version: '2.0'
 session_config:
-  session_expiration_time: 1
+  session_expiration_time: 20
   carry_over_slots_to_new_session: false
 intents:
 - greet
@@ -13,6 +13,10 @@ intents:
 - affirm
 - deny
 - bot_challenge
+- faq
+
+
+
 entities:
 - PERSON
 - age
@@ -49,6 +53,9 @@ slots:
   dialed_phone:
     type: text
     influence_conversation: false
+  faq:
+    type: any
+    influence_conversation: false
   is_new_user:
     type: categorical
     influence_conversation: true
@@ -61,18 +68,21 @@ slots:
     values:
     - yes
     - no
+
   is_the_person:
     type: categorical
     influence_conversation: true
     values:
     - yes
     - no
+
   is_best_phone:
     type: categorical
     influence_conversation: true
     values:
     - yes
     - no
+  
   requested_slot:
     type: any
     influence_conversation: false
@@ -86,13 +96,13 @@ responses:
   utter_out_of_scope:
   - text: Sorry, I'm not sure how to respond to that. Type "help" for assistance.
   utter_greet:
-  - channel: twilio_voice
-    text: I am Aditi, your virtual Medicare assistent. I can help you lower your medicare costs. Let's start with your contact details.
-  - channel: twilio
-    text: |-
-      I am Aditi, your virtual Medicare assistent. I can help you lower your medicare costs. Lets start with your contact details.
-      Ok?
-  - text: I am Aditi, your virtual Medicare assistent. I can help you lower your medicare costs. Lets start with your contact details.
+  - text: I am Aditi, your virtual Medicare assistent. I can help you lower your medicare costs and answer any medicare related questions you may have! Let's start with your contact details. 
+    channel: "twilio_voice"
+  - text: "I am Aditi, your virtual Medicare assistant. I can help you lower your medicare costs and answer any medicare related questions you may have! Lets start with your contact details.\nOk?"
+    channel: "twilio"
+  - text: I am Aditi, your virtual Medicare assistant. I can help you lower your medicare costs and answer any medicare related questions you may have! Lets start with your contact details.
+  utter_continue_contact_form:
+  - text: Do you want to continue providing your contact details?
   utter_how_can_i_help:
   - text: How can I help you?
   utter_cheer_up:
@@ -119,8 +129,8 @@ responses:
   utter_ask_contact_form_is_the_person:
   - text: Hi, welcome back.Are you {PERSON}?
   utter_ask_contact_form_is_best_phone:
-  - channel: twilio_voice
-    text: Is {phone} the best number to contact you?
+  - text: Is {phone} the best number to contact you?
+    channel: "twilio_voice"
   - text: Is {phone} the best number to contact you?
   utter_submit:
   - text: Thank you!
@@ -129,32 +139,13 @@ responses:
   utter_bot:
   - text: I'm Aditi,your virtual assistant.
   utter_agent_hand_off:
-  - text: One of our agents will get in touch with you shortly. You can also reach our agents by calling 888-346-8090.
+  - text: One of our agents will get in touch with you shortly. You can also reach our agents by calling 888-346-8090. Meanwhile, I can help answer any medicare related questions you may have.Ask me any Medicare realted Question!
   utter_no_contact_agent_hand_off:
-  - text: Ok. You can also reach our agents by calling 888-346-8090.
+  - text: Ok. You can also reach our agents by calling 888-346-8090. I can help answer any medicare related questions you may have.Ask me any Medicare realted Question!
   utter_greet_existing_user:
   - text: Hi There!
-  utter_faq/1047:
-  - text: Enrolling in Medicare coverage options online is generally easy and quick. More and more people are signing up online, according to an eHealth study. During 2018, about 16% of people in the study enrolled in Medicare coverage options online. That’s up from only 10% in 2017. In other words, about 60% more people in the study used eHealth’s online enrollment tool to sign up in 2018 than in 2017.\n\nSource- Medicare Online Enrollment Trends*\n\nIt’s interesting to note that online enrollment was even higher (22% for 2018) during “Q4.” Q4 means the 4th quarter of the year, October through December. That’s when Medicare’s Fall Open Enrollment happens for Medicare Advantage and Medicare prescription drug plans. Fall Open Enrollment goes from October 15 – December 7 every year.
-  utter_faq/1048:
-  - text: |-
-      Here’s a quick rundown of some important Medicare enrollment periods. More details follow later in this article.
 
-      **Initial Enrollment Period (IEP**) – The dates for this period depend on when you become eligible for Medicare. The IEP is usually a 7-month window. The IEP is for enrolling in Original Medicare, Part A and Part B, but you can generally enroll in a Medicare Advantage plan, Medicare prescription drug plan, or Medicare Supplement insurance plan during this period. Your IEP is covered in more detail later in this article.
-
-      **General Enrollment Period (GEP)**: This is another opportunity to enroll in Medicare Part A and/or Part B, from January 1 – March 31 each year.
-
-      ##### **Medicare Special Enrollment Period**: You may choose not to enroll in Medicare Part B when you are first eligible because you are already covered by group medical insurance through an employer or union. If you lose your group insurance, or if you decide you want to switch from your group coverage to Medicare, you can sign up at any time that you are still covered by the group plan or during a Special Enrollment Period (SEP).
-
-      Your eight-month special enrollment period begins either the month that your employment ends or when your group health coverage ends, whichever occurs first. If you enroll during an SEP, you generally do not have to pay a late enrollment penalty.
-
-      The Special Enrollment Period does not apply if you’re eligible for Medicare because you have ESRD. Please also keep in mind that COBRA and retiree health coverage are not considered current employer coverage and would not qualify you for a special enrollment period.
-
-      **Annual Election Period**: You can change your coverage in several ways (for example, enrolling in a Medicare Advantage plan or a stand-alone Medicare prescription drug plan). It runs October 15 – December 7 annually. The AEP is covered in more detail later in this article.
-
-      **Medicare Advantage Open Enrollment Period**: If you already have a Medicare Advantage plan, you can change plans during this period. This enrollment period is covered in more detail later in this article.
-
-      ## **How and when to sign up for Medicare**
+ 
 actions:
 - action_session_start
 - action_verify_new_user
@@ -173,11 +164,14 @@ actions:
 - validate_contact_form
 - utter_no_contact_agent_hand_off
 - utter_agent_hand_off
+- action_set_faq_slot
+
+
 forms:
   contact_form:
-    ignored_intents:
-    - chitchat
-    - faq
+    # ignored_intents:
+    # - chitchat
+    # - faq
     required_slots:
       AA_CONTINUE_FORM:
       - intent: affirm

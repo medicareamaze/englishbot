@@ -1,53 +1,84 @@
 version: "2.0"
 
 rules:
-- rule: Confirm that the bot is not a human
-  steps:
-  - intent: check_human
-  - action: utter_bot
   
-# - rule: Ask the user to rephrase whenever they send a message with low NLU confidence
-#   steps:
-#   - intent: nlu_fallback
-#   - action: utter_default
+    
+  # - rule: Ask the user to rephrase whenever they send a message with low NLU confidence
+  #   steps:
+  #   - intent: nlu_fallback
+  #   - action: utter_default
 
-- rule: answer out of scope
-  steps:
-  - intent: out_of_scope
-  - action: utter_out_of_scope
+  - rule: answer out of scope
+    steps:
+    - intent: out_of_scope
+    - action: utter_out_of_scope
+    
+  - rule: Say goodbye anytime the user says goodbye
+    steps:
+    - intent: goodbye
+    - action: utter_goodbye
+
+  - rule: Say 'I am a bot' anytime the user challenges
+    steps:
+    - intent: bot_challenge
+    - action: utter_iamabot
+
+  - rule: activate contact form
+    steps:
+      - intent: contact   # intent that triggers form activation
+      - action: contact_form      # run the form
+      - active_loop: contact_form 
+  - rule: Submit form
+    condition:
+    # Condition that form is active.
+    - active_loop: contact_form
+    steps:
+    # Form is deactivated
+    - action: contact_form
+    - active_loop: null
+    - slot_was_set:
+      - requested_slot: null
+    # The actions we want to run when the form is submitted.
+    - action: utter_submit
+    - action: utter_agent_hand_off
+
+  - rule: respond to FAQs
+    steps:
+    - intent: faq
+    - action: action_set_faq_slot
+
+  - rule: faq in contact form and continue form
+    condition:
+    # Condition that form is active.
+    - active_loop: contact_form
+    steps:
+    - intent: faq
+    - action: action_deactivate_loop
+    - active_loop: null
+    - action: action_set_faq_slot
+    - action: utter_continue_contact_form
+
+
   
-- rule: Say goodbye anytime the user says goodbye
-  steps:
-  - intent: goodbye
-  - action: utter_goodbye
-
-- rule: Say 'I am a bot' anytime the user challenges
-  steps:
-  - intent: bot_challenge
-  - action: utter_iamabot
-
-- rule: activate contact form
-  steps:
-    - intent: contact   # intent that triggers form activation
+  - rule: continue contact form
+    steps:
+    - action: utter_continue_contact_form
+    - intent: affirm
     - action: contact_form      # run the form
-    - active_loop: contact_form 
-- rule: Submit form
-  condition:
-  # Condition that form is active.
-  - active_loop: contact_form
-  steps:
-  # Form is deactivated
-  - action: contact_form
-  - active_loop: null
-  - slot_was_set:
-    - requested_slot: null
-  # The actions we want to run when the form is submitted.
-  - action: utter_submit
-  - action: utter_agent_hand_off
+    - active_loop: contact_form
+    
 
-- rule: respond to FAQs
-  steps:
-  - intent: faq
-  - action: utter_faq
+  - rule: Discontinue Contact form
+    
+    steps:
+    - action: utter_continue_contact_form
+    - intent: deny
+    - active_loop: null
+    - action: utter_how_can_i_help      
+   
+
+    
+
+
 
  
